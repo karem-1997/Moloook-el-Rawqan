@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام ملوك الروقان - الإصدار المعتمد</title>
+    <title>نظام ملوك الروقان - الإصدار الأخير</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
@@ -29,13 +29,13 @@
 
 <div class="container">
     <div id="adminPanel">
-        <h3 style="color:gold; text-align:center;">⚙️ إعدادات ملوك الروقان</h3>
+        <h3 style="color:gold; text-align:center;">⚙️ إعدادات التحكم</h3>
         <input type="text" id="c_gs" placeholder="رابط جوجل شيت (Script)" class="admin-input">
         <input type="number" id="c_rv" placeholder="سعر الكاش" class="admin-input">
         <input type="number" id="c_ra" placeholder="سعر الوكيل" class="admin-input">
         <input type="text" id="c_aid" placeholder="ID السحب المعروض" class="admin-input">
         <input type="text" id="c_aname" placeholder="اسم المستلم المعروض" class="admin-input">
-        <button class="btn-main" onclick="saveSettings()">حفظ الإعدادات ✅</button>
+        <button class="btn-main" onclick="saveSettings()">حفظ وتفعيل ✅</button>
         <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; margin-top:10px; background:#333; color:#fff; border:none; padding:10px; border-radius:10px;">رجوع</button>
     </div>
 
@@ -60,7 +60,7 @@
     </div>
     <div class="input-group"><label>المبلغ بالدولار ($)</label><input type="number" id="u_usd" oninput="calculate()"></div>
     <div class="result-box" id="res_egp">الإجمالي: 0.00 ج.م</div>
-    <div class="input-group"><label>بيانات المحفظة</label><input type="text" id="u_wallet"></div>
+    <div class="input-group"><label>رقم المحفظة</label><input type="text" id="u_wallet"></div>
     <div class="input-group"><label>صورة الإثبات</label><input type="file" id="u_pic" accept="image/*"></div>
     
     <button class="btn-main" onclick="sendOrder()" id="btnSend">تأكيد وإرسال الطلب 🚀</button>
@@ -69,14 +69,15 @@
 <div id="overlay">
     <div class="bill">
         <div style="color:var(--gold); font-size:24px; margin-bottom:15px;">تم الإرسال بنجاح ✅</div>
-        <div id="bill_content" style="text-align:right; font-size:14px;"></div>
+        <div id="bill_content" style="text-align:right;"></div>
         <button class="btn-main" style="margin-top:20px;" onclick="location.reload()">إغلاق</button>
     </div>
 </div>
 
 <script>
+    // الإعدادات من الصورة والبيانات
     const config = {
-        token: '820474760:AAGrlf74ttsxHH_SdyGM/Twr_138r608Bc9I', // التوكن المحدث والمصحح
+        token: '8204747586:AAGrlfQtsxHH4_SdyhTwgM138Gq60H2Bc9I',
         receivers: ['1713783294', '6239096035'] // علي ونور
     };
 
@@ -86,17 +87,16 @@
 
     let s = { rv: 45, ra: 47, aid: '2020', aname: 'فريده', gs: '' };
 
-    db.ref('limitless_final_v5').on('value', (snap) => { if(snap.val()) { s = snap.val(); applyUI(); } });
-    function applyUI() { document.getElementById('v_aid').innerText = s.aid; document.getElementById('v_aname').innerText = s.aname; }
+    db.ref('limitless_final_v6').on('value', (snap) => { if(snap.val()) { s = snap.val(); document.getElementById('v_aid').innerText = s.aid; document.getElementById('v_aname').innerText = s.aname; } });
 
     function openAdmin() { if(prompt("الباسورد:") === "ali@200200") { document.getElementById('c_rv').value=s.rv; document.getElementById('c_ra').value=s.ra; document.getElementById('c_aid').value=s.aid; document.getElementById('c_aname').value=s.aname; document.getElementById('c_gs').value=s.gs; document.getElementById('adminPanel').style.display='block'; } }
-    function saveSettings() { const newData = { rv: document.getElementById('c_rv').value, ra: document.getElementById('c_ra').value, aid: document.getElementById('c_aid').value, aname: document.getElementById('c_aname').value, gs: document.getElementById('c_gs').value }; db.ref('limitless_final_v5').set(newData).then(() => { alert("تم الحفظ ✅"); document.getElementById('adminPanel').style.display='none'; }); }
+    function saveSettings() { const newData = { rv: document.getElementById('c_rv').value, ra: document.getElementById('c_ra').value, aid: document.getElementById('c_aid').value, aname: document.getElementById('c_aname').value, gs: document.getElementById('c_gs').value }; db.ref('limitless_final_v6').set(newData).then(() => { alert("تم الحفظ ✅"); document.getElementById('adminPanel').style.display='none'; }); }
     function calculate() { const rate = document.getElementById('u_method').value === 'كاش' ? s.rv : s.ra; const total = (document.getElementById('u_usd').value * rate).toFixed(2); document.getElementById('res_egp').innerText = `الإجمالي: ${total} ج.م`; return total; }
 
     async function sendOrder() {
         const idVal = document.getElementById('u_id').value;
         const pic = document.getElementById('u_pic').files[0];
-        if(!idVal || !pic || !s.gs) return alert("اكمل البيانات واربط جوجل شيت!");
+        if(!idVal || !pic || !s.gs) return alert("اكمل البيانات واربط جوجل شيت في لوحة التحكم!");
         
         const btn = document.getElementById('btnSend'); btn.innerText = "جاري الإرسال..."; btn.disabled = true;
         const egp = calculate();
@@ -107,21 +107,21 @@
             // جوجل شيت
             await fetch(s.gs, {
                 method: 'POST', mode: 'no-cors',
-                body: JSON.stringify({ "data": [{ "الأيدي": idVal, "الدولار": document.getElementById('u_usd').value, "المصري": egp, "طريقة الاستلام": document.getElementById('u_method').value, "بيانات المحفظة": document.getElementById('u_wallet').value, "التاريخ": dateTime, "اسم الوكيل": document.getElementById('u_agent').value }] })
+                body: JSON.stringify({ "data": [{ "الأيدي": idVal, "الدولار": document.getElementById('u_usd').value, "المصري": egp, "طريقة الاستلام": document.getElementById('u_method').value, "رقم المحفظة": document.getElementById('u_wallet').value, "التاريخ": dateTime, "اسم الوكيل": document.getElementById('u_agent').value }] })
             });
 
-            // التلجرام
-            const caption = `👑 طلب جديد\n🆔 الأيدي: ${idVal}\n👤 الوكيل: ${document.getElementById('u_agent').value}\n💵 المبلغ: ${egp} ج.م\n💳 الطريقة: ${document.getElementById('u_method').value}\n🕒 الوقت: ${dateTime}\n📱 المحفظة: ${document.getElementById('u_wallet').value}`;
+            // التلجرام الثنائي
+            const caption = `👑 طلب سحب جديد\n🆔 الأيدي: ${idVal}\n👤 الوكيل: ${document.getElementById('u_agent').value}\n💵 المبلغ: ${egp} ج.م\n💳 الطريقة: ${document.getElementById('u_method').value}\n🕒 الوقت: ${dateTime}\n📱 المحفظة: ${document.getElementById('u_wallet').value}`;
             
             for (let chatId of config.receivers) {
                 const fd = new FormData();
                 fd.append('chat_id', chatId); fd.append('photo', pic); fd.append('caption', caption);
-                await fetch(`https://api.telegram.org/bot${config.token}/sendPhoto`, { method: 'POST', body: fd }).catch(err => console.log("خطأ في إرسال تلجرام لـ " + chatId));
+                await fetch(`https://api.telegram.org/bot${config.token}/sendPhoto`, { method: 'POST', body: fd });
             }
 
-            document.getElementById('bill_content').innerHTML = `<b>الأيدي:</b> ${idVal}<br><b>المبلغ:</b> ${egp} ج.م`;
+            document.getElementById('bill_content').innerHTML = `<b>الأيدي:</b> ${idVal}<br><b>المبلغ:</b> ${egp} ج.م<br><b>الوقت:</b> ${dateTime}`;
             document.getElementById('overlay').style.display = 'flex';
-        } catch (e) { alert("حدث خطأ"); btn.disabled = false; btn.innerText = "إرسال"; }
+        } catch (e) { alert("حدث خطأ"); btn.disabled = false; btn.innerText = "تأكيد وإرسال"; }
     }
 </script>
 </body>
